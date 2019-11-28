@@ -5,8 +5,6 @@ import MySimplex
 variables = ["x1", "x2", "x3", "x4", "x5"]
 ## Delare a list of coefficients  of each variable in the objective function (same order)
 obj_coeffs = [19.0, 17.0, 23.0, 21.0, 25.0]
-## Delare a list of upperbounds of each variable
-upperbounds = [cplex.infinity, cplex.infinity, cplex.infinity, cplex.infinity, cplex.infinity] 
 ## Delare a list of lowerbounds of each variable
 lowerbounds = [0.0, 0.0, 0.0, 0.0, 0.0] 
 
@@ -27,14 +25,23 @@ problem = MySimplex.SimplexProblem()
 ## Set objective as minimization
 problem.setObjectiveDirection( Max=True )
 ## Set variables and objective function
-problem.setVariables( Names=variables, ObjCoeffs=obj_coeffs
-					, Upperbounds=upperbounds, Lowerbounds=lowerbounds )
+problem.setVariables( Names=variables, ObjCoeffs=obj_coeffs, Lowerbounds=lowerbounds )
 ## Set constraints
 for idx in range(len(lin_expr)):
-	problem.addConstraint( Name = constraint_names[i]
-						, rowVec = lin_expr[i]
-						, ineq_dir = senses[i]
-						, RHS = righthand[i] )
+	problem.addConstraint( Name = constraint_names[idx]
+						, rowVec = lin_expr[idx]
+						, ineq_dir = senses[idx]
+						, RHS = righthand[idx] )
+
+problem.debug()
+print(problem.setup())
+
+problem.debug()
+
+problem.buildTableau()
+
+"""
+
 
 ## Solve the problem
 problem.solve()
@@ -52,3 +59,4 @@ for i in range(numcols):
     print("Variable " + variables[i] + ": Value = " + repr(x[i]))
 for i in range(numrows):
     print("Constraint " + constraint_names[i] + ": Shadow Price = " + repr(shadow_price[i]))
+"""
