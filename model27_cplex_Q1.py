@@ -1,10 +1,15 @@
+############################################################################
+# File Name: model27_cplex_Q1.py                                           #
+# Author: Geonsik Yu, Purdue University, IE Dept                           #
+# LP problem (Model 27: Hydrological Model) from:                          #
+# https://sites.math.washington.edu/~burke/crs/407/models/m27.html         #
+############################################################################
 import cplex
 
 def oneHot(length, hotIdx):
 	hotVec = [0.0]*length
 	hotVec[hotIdx] = 1.0
 	return hotVec
-
 
 ## STEP 1. Set up what we need. -----------------------------------------------------------
 ## Declare small constant epsilon for strict inequality removal:
@@ -16,7 +21,8 @@ obj_coeffs = 3*[0.0] + 10*[1.0]
 ## Delare a list of upperbounds of each variable:
 upperbounds = 13*[cplex.infinity] 
 ## Delare a list of lowerbounds of each variable:
-lowerbounds = 3*[EPSILON] + 10*[-cplex.infinity]
+#lowerbounds = 3*[EPSILON] + 10*[-cplex.infinity]
+lowerbounds = 3*[EPSILON] + 10*[0]
 
 ## Declare contraint names:
 constraint_names = ["Period 3-(1)", "Period 3-(2)",

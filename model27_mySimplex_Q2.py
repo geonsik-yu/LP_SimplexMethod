@@ -1,22 +1,20 @@
 ############################################################################
-# File Name: model27_cplex_Q2.py                                           #
+# File Name: model27_mySimplex_Q2.py                                       #
 # Author: Geonsik Yu, Purdue University, IE Dept                           #
 # LP problem (Model 27: Hydrological Model) from:                          #
 # https://sites.math.washington.edu/~burke/crs/407/models/m27.html         #
 ############################################################################
-import cplex
+import MySimplex
 
 ## STEP 1. Set up what we need. -----------------------------------------------------------
 ## Declare small constant epsilon for strict inequality removal:
 EPSILON = 0.000000000001
 ## Declare variable names:
-variables = ["b0", "b1", "b2", "A"]
+variables = ["b0", "b1", "b2", "x3"]
 ## Delare a list of coefficients  of each variable in the objective function (same order):
 obj_coeffs = 3*[0.0] + [1.0]
-## Delare a list of upperbounds of each variable:
-upperbounds = 4*[cplex.infinity] 
 ## Delare a list of lowerbounds of each variable:
-#lowerbounds = 3*[EPSILON] + [-cplex.infinity]
+#lowerbounds = 3*[EPSILON] + 10*[-float("inf")]
 lowerbounds = 3*[EPSILON] + [0.0]
 ## Declare contraint names:
 constraint_names = ["Period 3-(1)", "Period 3-(2)",
@@ -55,30 +53,25 @@ Mat.append([1.0, 1.0, 1.0, 0.0])
 ## Set coefficients of each variables in each constraints:
 lin_expr = []
 for row in Mat:
-	lin_expr.append( cplex.SparsePair(ind=variables, val=row) )
+	lin_expr.append( row )
 
 ## STEP 2. Generate LP problem object -----------------------------------------------------
-## Generate an LP problem
-problem = cplex.Cplex()
+## Generate an LP problem framework
+problem = MySimplex.SimplexProblem()
 ## Set objective as minimization
-problem.objective.set_sense( problem.objective.sense.minimize )
+problem.setObjectiveDirection( Max=False )
 ## Set variables and objective function
-problem.variables.add( obj=obj_coeffs, ub=upperbounds, lb=lowerbounds, names=variables )
+problem.setVariables( Names=variables, ObjCoeffs=obj_coeffs, Lowerbounds=lowerbounds )
 ## Set constraints
-problem.linear_constraints.add(lin_expr = lin_expr, senses = senses, rhs = righthand, names = constraint_names)
-## Solve the problem
-problem.solve()
+for idx in range(len(lin_expr)):
+	problem.addConstraint( Name = constraint_names[idx]
+						, rowVec = lin_expr[idx]
+						, ineq_dir = senses[idx]
+						, RHS = righthand[idx] )
 
-## STEP 3. Print out results --------------------------------------------------------------
-numrows = problem.linear_constraints.get_num()
-numcols = problem.variables.get_num()
+## STEP 3. Solve the problem --------------------------------------------------------------
+problem.setup()
+Tableau = problem.buildTableau()
+Tableau = problem.solve(Tableau)
 
-print("Solution status = "+ repr(problem.solution.get_status())+ ": " +repr(problem.solution.status[problem.solution.get_status()]))
-print("Solution value  = "+ repr(problem.solution.get_objective_value()))
 
-x = problem.solution.get_values()
-shadow_price = problem.solution.get_dual_values()
-for i in range(numcols):
-    print("Variable " + variables[i] + ": Value = " + repr(x[i]))
-for i in range(numrows):
-    print("Constraint " + constraint_names[i] + ": Shadow Price = " + repr(shadow_price[i]))

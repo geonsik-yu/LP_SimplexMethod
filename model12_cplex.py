@@ -1,3 +1,9 @@
+############################################################################
+# File Name: model12_cplex.py                                              #
+# Author: Geonsik Yu, Purdue University, IE Dept                           #
+# LP problem (Model 12: Alloy Blending) from:                              #
+# https://sites.math.washington.edu/~burke/crs/407/models/m12.html         #
+############################################################################
 import cplex
 
 ## STEP 1. Set up what we need. -----------------------------------------------------------
