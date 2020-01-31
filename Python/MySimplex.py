@@ -416,7 +416,8 @@ class SimplexProblem(object):
             if rowFlags[idx] == False:
                 break;
             remainderIndices.append(rref_results[1][idx])
-        return (ProblemMatrix[remainderIndices,:], remainderIndices)
+        #return (ProblemMatrix[remainderIndices,:], remainderIndices)
+        return (ProblemMatrix, list(range(len(rowFlags))))
 
     def rref(self, ProblemMatrix):
         ############################################################################
